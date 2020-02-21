@@ -51,7 +51,22 @@ caams::matrix sj_jacobian(caams::matrix p, caams::matrix s_p ){
 }
 
 caams::matrix sj_gamma(caams::matrix p_dot, caams::matrix s_p){
-	return -2.0*(caams::G(p_dot)*caams::a_minus(s_p)*p_dot+s_p*(~p_dot*p_dot));
+    double *de = p_dot.data;
+    double *s = s_p.data;
+
+    return -2.0*caams::matrix(3,1,
+        de[0]*(de[2]*s[3-1]-de[3]*s[2-1]+2.0*de[0]*s[1-1])
+        + de[1]*(de[3]*s[3-1]+de[2]*s[2-1]+2.0*de[1]*s[1-1])
+        + de[2]*(de[0]*s[3-1]+de[1]*s[2-1])
+        + de[3]*(de[1]*s[3-1]-de[0]*s[2-1]),
+        de[0]*(-de[1]*s[3-1]+2.0*de[0]*s[2-1]+de[3]*s[1-1])
+        + de[1]*(de[2]*s[1-1]-de[0]*s[3-1])
+        + de[2]*(de[3]*s[3-1]+2.0*de[2]*s[2-1]+de[1]*s[1-1])
+        + de[3]*(de[2]*s[3-1]+de[0]*s[1-1]),
+        de[0]*(2.0*de[0]*s[3-1]+de[1]*s[2-1]-de[2]*s[1-1])
+        + de[1]*(de[0]*s[2-1]+de[3]*s[1-1])
+        + de[2]*(de[3]*s[2-1]-de[0]*s[1-1])
+        + de[3]*(2.0*de[3]*s[3-1]+de[2]*s[2-1]+de[1]*s[1-1]));
 }
 
 bool gyro_flag=false;
@@ -72,7 +87,7 @@ caams::matrix s_p2_2(3,1);
 caams::matrix s_p3_1(3,1, length1/2.0,-radius1*2.0,0.0);
 caams::matrix s_p3_3(3,1, 0.0,radius3*2.0,0.0);
 caams::matrix p1(4,1, 1.0,0.0,0.0,0.0);
-caams::matrix p2(caams::pAA(M_PI/4.0,caams::matrix(3,1, 0.0,0.0,1.0)));
+caams::matrix p2(caams::pAA(10.0/180.0*M_PI,caams::matrix(3,1, 0.0,0.0,1.0)));
 //caams::matrix p2(4,1, 1.0,0.0,0.0,0.0);
 caams::matrix p3(4,1, 1.0,0.0,0.0,0.0);
 caams::matrix omega_p1(3,1, 0.0,0.0,0.0);
@@ -81,7 +96,7 @@ caams::matrix omega_p3(3,1, 0.0,0.0,0.0);
 caams::matrix p_dot1(0.5*~caams::L(p1)*omega_p1);
 caams::matrix p_dot2(4,1);
 caams::matrix p_dot3(0.5*~caams::L(p3)*omega_p3);
-caams::matrix g(3,1, 0.0,-9.81,0.0);
+caams::matrix g(3,1, 0.0,-10.0,0.0);
 caams::matrix f1(m1*g);
 caams::matrix f2(m2*g);
 caams::matrix f3(m3*g);
@@ -219,12 +234,28 @@ caams::matrix system_solve(caams::matrix p, caams::matrix p_dot,
 	p_ddot.sub(x.sub(4,1,11,1),5,1);
 	p_ddot.sub(x.sub(4,1,18,1),9,1);
 	
-	//caams::matrix lambda1(x.sub(3,1,25,1));
-	//caams::matrix lambda2(x.sub(3,1,28,1));
-	//caams::matrix lambda3(x.sub(3,1,31,1));
+    caams::matrix lambda1(x.sub(3,1,25,1));
+    caams::matrix lambda2(x.sub(3,1,28,1));
+    caams::matrix lambda3(x.sub(3,1,31,1));
 	//lambda1.print("lambda1");
 	//lambda2.print("lambda2");
 	//lambda3.print("lambda3");
+
+    // force on body one due to constraint 1
+    caams::matrix r11(~B11*-lambda1);
+    r11.sub(3,1,1,1).print("force reaction constraint 1 body 1");
+
+    // force on body 2 due to constraint 2
+    caams::matrix r22(~B22*-lambda2);
+    r22.sub(3,1,1,1).print("force reaction constraint 2 body 2");
+
+    // force on body 3 due to constraint 3
+    caams::matrix r33(~B33*-lambda3);
+    r33.sub(3,1,1,1).print("force reaction constraint 3 body 3");
+
+
+
+
 
 	return p_ddot;
 }

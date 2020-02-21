@@ -41,7 +41,22 @@ caams::matrix sj_jacobian(caams::matrix p, caams::matrix s_p ){
 }
 
 caams::matrix sj_gamma(caams::matrix p_dot, caams::matrix s_p){
-	return -2.0*(caams::G(p_dot)*caams::a_minus(s_p)*p_dot+s_p*(~p_dot*p_dot));
+    double *de = p_dot.data;
+    double *s = s_p.data;
+
+    return -2.0*caams::matrix(3,1,
+        de[0]*(de[2]*s[3-1]-de[3]*s[2-1]+2.0*de[0]*s[1-1])
+        + de[1]*(de[3]*s[3-1]+de[2]*s[2-1]+2.0*de[1]*s[1-1])
+        + de[2]*(de[0]*s[3-1]+de[1]*s[2-1])
+        + de[3]*(de[1]*s[3-1]-de[0]*s[2-1]),
+        de[0]*(-de[1]*s[3-1]+2.0*de[0]*s[2-1]+de[3]*s[1-1])
+        + de[1]*(de[2]*s[1-1]-de[0]*s[3-1])
+        + de[2]*(de[3]*s[3-1]+2.0*de[2]*s[2-1]+de[1]*s[1-1])
+        + de[3]*(de[2]*s[3-1]+de[0]*s[1-1]),
+        de[0]*(2.0*de[0]*s[3-1]+de[1]*s[2-1]-de[2]*s[1-1])
+        + de[1]*(de[0]*s[2-1]+de[3]*s[1-1])
+        + de[2]*(de[3]*s[2-1]-de[0]*s[1-1])
+        + de[3]*(2.0*de[3]*s[3-1]+de[2]*s[2-1]+de[1]*s[1-1]));
 }
 
 double m1=1.0;
