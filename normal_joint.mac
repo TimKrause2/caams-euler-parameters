@@ -1,0 +1,54 @@
+stardisp:true;
+batch("caams.mac");
+
+p1 : matrix(
+    [p1_0],
+    [p1_1],
+    [p1_2],
+    [p1_3]);
+
+p2 : matrix(
+    [p2_0],
+    [p2_1],
+    [p2_2],
+    [p2_3]);
+
+s1_p : matrix(
+    [s1_px],
+    [s1_py],
+    [s1_pz]);
+
+s2_p : matrix(
+    [s2_px],
+    [s2_py],
+    [s2_pz]);
+
+s1 : G(p1) . transpose(L(p1)) . s1_p;
+
+s2 : matrix(
+    [s2x],
+    [s2y],
+    [s2z]);
+
+PHI : transpose(s1) . s2;
+
+C1:2.0*(G(p1) . a_minus(s1_p) + s1_p.transpose(p1));
+
+Jacobian1:transpose(s2).C1;
+
+dp1 : matrix(
+    [dp1_0],
+    [dp1_1],
+    [dp1_2],
+    [dp1_3]);
+
+/*dPHI : diff(PHI,p1_0)*dp1_0 + diff(PHI,p1_1)*dp1_1
+    + diff(PHI,p1_2)*dp1_2 + diff(PHI,p1_3)*dp1_3;*/
+
+dPHI : Jacobian1 . dp1;
+
+GAMMA : diff(dPHI,p1_0)*dp1_0 + diff(dPHI,p1_1)*dp1_1
+    + diff(dPHI,p1_2)*dp1_2 + diff(dPHI,p1_3)*dp1_3;
+
+
+

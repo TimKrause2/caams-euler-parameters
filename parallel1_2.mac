@@ -1,0 +1,32 @@
+stardisp:true;
+batch("caams.mac");
+
+p1 : matrix(
+    [p1_0],
+    [p1_1],
+    [p1_2],
+    [p1_3]);
+
+s1_p : matrix(
+    [s1_px],
+    [s1_py],
+    [s1_pz]);
+
+s2 : matrix(
+    [s2x],
+    [s2y],
+    [s2z]);
+
+dp1 : matrix(
+    [dp1_0],
+    [dp1_1],
+    [dp1_2],
+    [dp1_3]);
+
+PHI_p : a_cross(s2) . 2 . (G(p1) . a_minus(s1_p));
+
+dPHI : PHI_p . dp1;
+
+GAMMA : diff(dPHI,p1_0)*dp1_0 + diff(dPHI,p1_1)*dp1_1
+    + diff(dPHI,p1_2)*dp1_2 + diff(dPHI,p1_3)*dp1_3;
+

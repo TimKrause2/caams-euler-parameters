@@ -1,0 +1,132 @@
+G(p) := matrix(
+    [-p[2][1], p[1][1],-p[4][1], p[3][1]],
+    [-p[3][1], p[4][1], p[1][1],-p[2][1]],
+    [-p[4][1],-p[3][1], p[2][1], p[1][1]]);
+
+L(p) := matrix(
+    [-p[2][1], p[1][1], p[4][1],-p[3][1]],
+    [-p[3][1],-p[4][1], p[1][1], p[2][1]],
+    [-p[4][1], p[3][1],-p[2][1], p[1][1]]);
+
+p1 : matrix(
+    [p1_0],
+    [p1_1],
+    [p1_2],
+    [p1_3]);
+
+p2 : matrix(
+    [p2_0],
+    [p2_1],
+    [p2_2],
+    [p2_3]);
+
+s1_p : matrix(
+    [s1_px],
+    [s1_py],
+    [s1_pz]);
+
+n1_p : matrix(
+    [n1_px],
+    [n1_py],
+    [n1_pz]);
+
+n2_p : matrix(
+    [n2_px],
+    [n2_py],
+    [n2_pz]);
+
+s1_calc : G(p1) . transpose(L(p1)). s1_p;
+
+s1_raw : matrix(
+    [s1x],
+    [s1y],
+    [s1z]);
+
+n1_raw : matrix(
+    [n1x],
+    [n1y],
+    [n1z]);
+
+n1_calc : G(p2) . transpose(L(p2)) . n1_p;
+
+n2_raw : matrix(
+    [n2x],
+    [n2y],
+    [n2z]);
+
+n2_calc : G(p2) . transpose(L(p2)) . n2_p;
+
+phi1 : atan2( transpose(s1_calc).n1_raw, transpose(s1_calc).n2_raw ) - theta;
+
+phi2 : atan2( transpose(s1_raw).n1_calc, transpose(s1_raw).n2_calc ) - theta;
+
+dphi1_dp1_0 : diff(phi1,p1_0);
+dphi1_dp1_1 : diff(phi1,p1_1);
+dphi1_dp1_2 : diff(phi1,p1_2);
+dphi1_dp1_3 : diff(phi1,p1_3);
+
+phi1_s1_sublist : [
+    s1_calc[1][1] = s1x,
+    s1_calc[2][1] = s1y,
+    s1_calc[3][1] = s1z,
+    (n1x*s1x + n1y*s1y + n1z*s1z)^2
+    + (n2x*s1x + n2y*s1y + n2z*s1z)^2 = 1,
+    s1x = s1_calc[1][1],
+    s1y = s1_calc[2][1],
+    s1z = s1_calc[3][1]];
+
+dphi1_dp1_0 : subst(phi1_s1_sublist, dphi1_dp1_0 );
+dphi1_dp1_1 : subst(phi1_s1_sublist, dphi1_dp1_1 );
+dphi1_dp1_2 : subst(phi1_s1_sublist, dphi1_dp1_2 );
+dphi1_dp1_3 : subst(phi1_s1_sublist, dphi1_dp1_3 );
+
+dphi2_dp2_0 : diff(phi2,p2_0);
+dphi2_dp2_1 : diff(phi2,p2_1);
+dphi2_dp2_2 : diff(phi2,p2_2);
+dphi2_dp2_3 : diff(phi2,p2_3);
+
+phi2_n_sublist : [
+    n1_calc[1][1] = n1x,
+    n1_calc[2][1] = n1y,
+    n1_calc[3][1] = n1z,
+    n2_calc[1][1] = n2x,
+    n2_calc[2][1] = n2y,
+    n2_calc[3][1] = n2z,
+    (n1x*s1x + n1y*s1y + n1z*s1z)^2
+    + (n2x*s1x + n2y*s1y + n2z*s1z)^2 = 1,
+    n1x = n1_calc[1][1],
+    n1y = n1_calc[2][1],
+    n1z = n1_calc[3][1],
+    n2x = n1_calc[1][1],
+    n2y = n1_calc[2][1],
+    n2z = n1_calc[3][1]];
+
+dphi2_dp2_0 : subst(phi2_n_sublist, dphi2_dp2_0 );
+dphi2_dp2_1 : subst(phi2_n_sublist, dphi2_dp2_1 );
+dphi2_dp2_2 : subst(phi2_n_sublist, dphi2_dp2_2 );
+dphi2_dp2_3 : subst(phi2_n_sublist, dphi2_dp2_3 );
+
+dPHI : dphi1_dp1_0*dp1_0 + dphi1_dp1_1*dp1_1
+     + dphi1_dp1_2*dp1_2 + dphi1_dp1_3*dp1_3
+     + dphi2_dp2_0*dp2_0 + dphi2_dp2_1*dp2_1
+     + dphi2_dp2_2*dp2_2 + dphi2_dp2_3*dp2_3;
+
+GAMMA : diff(dPHI,p1_0)*dp1_0 + diff(dPHI,p1_1)*dp1_1
+      + diff(dPHI,p1_2)*dp1_2 + diff(dPHI,p1_3)*dp1_3
+      + diff(dPHI,p2_0)*dp2_0 + diff(dPHI,p2_1)*dp2_2
+      + diff(dPHI,p2_2)*dp2_2 + diff(dPHI,p2_3)*dp2_3;
+
+GAMMA_sublist : [
+    s1_calc[1][1] = s1x,
+    s1_calc[2][1] = s1y,
+    s1_calc[3][1] = s1z,
+    n1_calc[1][1] = n1x,
+    n1_calc[2][1] = n1y,
+    n1_calc[3][1] = n1z,
+    n2_calc[1][1] = n2x,
+    n2_calc[2][1] = n2y,
+    n2_calc[3][1] = n2z,
+    n1x*s1x + n1y*s1y + n1z*s1z = n1_dot_s1,
+    n2x*s1x + n2y*s1y + n2z*s1z = n2_dot_s1];
+
+GAMMA : subst(GAMMA_sublist, GAMMA);
