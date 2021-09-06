@@ -3,36 +3,6 @@
 #include <algorithm>
 #include <iostream>
 
-caams::matrix J_p_cylinder_x_axis(double m, double r, double l){
-	r*=r;
-	l*=l;
-	double Jxx = m*r/2.0;
-	double Jyy = m/12.0*(3*r+l);
-	double Jzz = Jyy;
-	double i[3][3]=
-	{
-		{Jxx,0.0,0.0},
-		{0.0,Jyy,0.0},
-		{0.0,0.0,Jzz}
-	};
-	return caams::matrix(3,3,(double*)i);
-}
-
-caams::matrix J_p_cylinder_z_axis(double m, double r, double h){
-	r*=r;
-	h*=h;
-	double Jxx = m/12.0*(3*r+h);
-	double Jyy = Jxx;
-	double Jzz = m*r/2.0;
-	double i[3][3]=
-	{
-		{Jxx,0.0,0.0},
-		{0.0,Jyy,0.0},
-		{0.0,0.0,Jzz}
-	};
-	return caams::matrix(3,3,(double*)i);
-}
-
 caams::matrix sj_jacobian(caams::matrix p, caams::matrix s_p ){
 	caams::matrix B(3,7);
 	B.sub( caams::matrix(3,3,caams::init_identity), 1, 1);
@@ -91,9 +61,9 @@ double k_omega = 0.0;
 caams::matrix k_omega1(3,3, k_omega,0.0,0.0, 0.0,k_omega*4.0,0.0, 0.0,0.0,k_omega*4.0);
 caams::matrix k_omega2(3,3, k_omega/4.0,0.0,0.0, 0.0,k_omega,0.0, 0.0,0.0,k_omega);
 caams::matrix k_omega3(k_omega2);
-caams::matrix J_p1(J_p_cylinder_x_axis(m1,radius1,length1));
-caams::matrix J_p2(J_p_cylinder_z_axis(m2,radius2,height2));
-caams::matrix J_p3(J_p_cylinder_x_axis(m3,radius3,length3));
+caams::matrix J_p1(caams::J_p_cylinder_x_axis(m1,radius1,length1));
+caams::matrix J_p2(caams::J_p_cylinder_z_axis(m2,radius2,height2));
+caams::matrix J_p3(caams::J_p_cylinder_x_axis(m3,radius3,length3));
 
 double dt=1.0/30.0;
 double dt_max=0.001;

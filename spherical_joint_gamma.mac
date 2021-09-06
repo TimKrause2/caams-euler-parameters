@@ -3,6 +3,7 @@ s_minus: matrix([0,-s1,-s2,-s3],[s1,0,s3,-s2],[s2,-s3,0,s1],[s3,s2,-s1,0]);
 s: matrix([s1],[s2],[s3]);
 p: matrix([e0],[e1],[e2],[e3]);
 pd: matrix([de0],[de1],[de2],[de3]);
-P: (G.s_minus + s.transpose(p)).pd;
+P: (G . s_minus + s . transpose(p)) . pd;
 sj_gamma: diff(P,e0)*de0 + diff(P,e1)*de1 + diff(P,e2)*de2 + diff(P,e3)*de3;
+stardisp:true;
 disp(sj_gamma);

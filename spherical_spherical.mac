@@ -1,0 +1,72 @@
+batch("caams.mac");
+
+p1: matrix(
+    [p1_0],
+    [p1_1],
+    [p1_2],
+    [p1_3]);
+
+s1_p: matrix(
+    [s1_px],
+    [s1_py],
+    [s1_pz]);
+
+B1: 2*( G(p1).a_minus(s1_p) + s1_p.transpose(p1) );
+
+p2: matrix(
+    [p2_0],
+    [p2_1],
+    [p2_2],
+    [p2_3]);
+
+s2_p: matrix(
+    [s2_px],
+    [s2_py],
+    [s2_pz]);
+
+B2: 2*( G(p2).a_minus(s2_p) + s2_p.transpose(p2) );
+
+r1: matrix(
+    [r1x],
+    [r1y],
+    [r1z]);
+
+s1: r1 + Ap(p1).s1_p;
+
+s2: matrix(
+    [s2x],
+    [s2y],
+    [s2z]);
+
+d: matrix (
+    [dx],
+    [dy],
+    [dz]);
+
+PHI1_p: -2*transpose(d).B1;
+PHI2_p:  2*transpose(d).B2;
+
+p1_dot: matrix(
+    [p1_dot_0],
+    [p1_dot_1],
+    [p1_dot_2],
+    [p1_dot_3]);
+
+p2_dot: matrix(
+    [p2_dot_0],
+    [p2_dot_1],
+    [p2_dot_2],
+    [p2_dot_3]);
+
+dPHI1 : PHI1_p . p1_dot;
+dPHI2 : PHI2_p . p2_dot;
+
+GAMMA1:    diff(dPHI1,p1_0)*p1_dot_0 + diff(dPHI1,p1_1)*p1_dot_1
+         + diff(dPHI1,p1_2)*p1_dot_2 + diff(dPHI1,p1_3)*p1_dot_3;
+
+GAMMA2:    diff(dPHI2,p2_0)*p2_dot_0 + diff(dPHI2,p2_1)*p2_dot_1
+         + diff(dPHI2,p2_2)*p2_dot_2 + diff(dPHI2,p2_3)*p2_dot_3;
+
+
+
+
