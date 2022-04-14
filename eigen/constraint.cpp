@@ -59,7 +59,7 @@ Eigen::MatrixXd SphericalJoint::Body1Jacobian(void)
 Eigen::MatrixXd SphericalJoint::Body2Jacobian(void)
 {
 	Eigen::Matrix<double,3,7> r;
-	r.block<3,3>(0,0) = Eigen::Matrix3d::Identity();
+	r.block<3,3>(0,0) = -Eigen::Matrix3d::Identity();
 	r.block<3,4>(0,3) =-2.0*(caams::G(body2->rk_p)*caams::a_minus(s2_p)+s2_p*body2->rk_p.transpose());
 	return r;
 }
@@ -75,7 +75,7 @@ Eigen::MatrixXd SphericalJoint::Body1ModifiedJacobian(void)
 Eigen::MatrixXd SphericalJoint::Body2ModifiedJacobian(void)
 {
 	Eigen::Matrix<double,3,7> r;
-	r.block<3,3>(0,0) = Eigen::Matrix3d::Identity();
+	r.block<3,3>(0,0) = -Eigen::Matrix3d::Identity();
 	r.block<3,4>(0,3) =-2.0*caams::G(body2->rk_p)*caams::a_minus(s2_p);
 	return r;
 }
