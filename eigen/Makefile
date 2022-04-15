@@ -1,7 +1,8 @@
 CPPFLAGS= -O2 `pkg-config --cflags eigen3`
 CC=c++
 LDLIBS= -lGL -lglut
-LDFLAGS=-ggdb
+
+all:sp_sp_test n21test mb_gyro
 
 sp_sp_test:sp_sp_test.o caams.o body.o constraint.o forces.o mbsystem.o
 
