@@ -20,7 +20,11 @@ Body::Body(
     r_dot(r_dot),
     p_dot(p_dot),
     mass(mass),
-	J_p(J_p)
+	J_p(J_p),
+	rk_r(Eigen::Vector3d::Zero()),
+	rk_p(Eigen::Vector4d(1.0, 0.0, 0.0, 0.0)),
+	rk_r_dot(Eigen::Vector3d::Zero()),
+	rk_p_dot(Eigen::Vector4d::Zero())
 {
 	eqn_index = -1;
 }
@@ -104,7 +108,7 @@ void CylinderXaxis::Draw(void)
 	glm::dmat3x3 Aglm = E2GLM(caams::Ap(p));
 	glm::dmat4x4 Abody(Aglm);
 	glm::dvec3 rglm = E2GLM(r);
-   glm::dmat4x4 Atrans = glm::translate(rglm);
+	glm::dmat4x4 Atrans = glm::translate(rglm);
     glm::dvec3 radj(0.0,0.0,-length/2.0);
     glm::dmat4x4 Aadj = glm::rotate(M_PI/2.0,glm::dvec3(0.0,1.0,0.0))*
                         glm::translate(radj);

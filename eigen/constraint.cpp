@@ -1,5 +1,6 @@
 #include "constraint.h"
 #include <stdio.h>
+#include <iostream>
 #include <GL/gl.h>
 #include <GL/freeglut.h>
 #define GLM_FORCE_RADIANS
@@ -196,6 +197,9 @@ void SphericalSphericalJoint::Draw(void)
 {
 	Eigen::Vector3d s1 = body1->r + caams::Ap(body1->p)*s1_p;
 	Eigen::Vector3d s2 = body2->r + caams::Ap(body2->p)*s2_p;
+	//Eigen::Vector3d d(s2-s1);
+	//double l = d.norm();
+	//std::cout << "SphericalSphericalJoint::Draw l:" << l << std::endl;
 
     glBegin(GL_LINES);
         glColor3f(1.0f,0.5f,0.5f);

@@ -121,7 +121,7 @@ void System::rkSolve(void)
                 nzs);
         }
 		Eigen::VectorXd gamma_t(constraint->ModifiedGamma());
-        //gamma_t.print("gamma:");
+		//std::cout << "gamma:" << std::endl << gamma_t << std::endl;
 		gamma_t -= 2.0*STABILIZATION_ALPHA*constraint->dPHI();
 		Eigen::VectorXd PHI(constraint->PHI());
         //PHI.print("PHI:");
@@ -232,6 +232,8 @@ void System::rkUpdateState(double dt)
 		body->p.normalize();
 		body->r_dot += dt*(body->k_r_ddot*c);
 		body->p_dot += dt*(body->k_p_ddot*c);
+		double sigma = (body->p_dot.transpose()*body->p)(0);
+		body->p_dot -= sigma*body->p;
     }
 }
 

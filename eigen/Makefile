@@ -1,8 +1,11 @@
-CPPFLAGS= -ggdb `pkg-config --cflags eigen3`
+CPPFLAGS= -O2 `pkg-config --cflags eigen3`
 CC=c++
 LDLIBS= -lGL -lglut
 LDFLAGS=-ggdb
 
+sp_sp_test:sp_sp_test.o caams.o body.o constraint.o forces.o mbsystem.o
+
+sp_sp_test.o:sp_sp_test.cpp
 
 n21test:n21test.o caams.o body.o constraint.o forces.o mbsystem.o
 
