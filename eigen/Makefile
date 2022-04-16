@@ -2,7 +2,19 @@ CPPFLAGS= -O2 `pkg-config --cflags eigen3`
 CC=c++
 LDLIBS= -lGL -lglut
 
-all:sp_sp_test n21test mb_gyro
+all:sp_sp_test n21test mb_gyro revp_test p22test chain
+
+chain:chain.o caams.o body.o constraint.o forces.o mbsystem.o
+
+chain.o:chain.cpp
+
+p22test:p22test.o caams.o body.o constraint.o forces.o mbsystem.o
+
+p22test.o:p22test.cpp
+
+revp_test:revp_test.o caams.o body.o constraint.o forces.o mbsystem.o
+
+revp_test.o:revp_test.cpp
 
 sp_sp_test:sp_sp_test.o caams.o body.o constraint.o forces.o mbsystem.o
 
