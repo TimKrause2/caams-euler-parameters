@@ -226,12 +226,13 @@ void System::rkPhase4Integrate(void)
 void System::rkUpdateState(double dt)
 {
 	Eigen::Vector4d c(1.0/6.0, 2.0/6.0, 2.0/6.0, 1.0/6.0);
+	c*=dt;
 	for(auto body:bodies){
-		body->r += dt*(body->k_r_dot*c);
-		body->p += dt*(body->k_p_dot*c);
+		body->r += body->k_r_dot*c;
+		body->p += body->k_p_dot*c;
 		body->p.normalize();
-		body->r_dot += dt*(body->k_r_ddot*c);
-		body->p_dot += dt*(body->k_p_ddot*c);
+		body->r_dot += body->k_r_ddot*c;
+		body->p_dot += body->k_p_ddot*c;
 		double sigma = (body->p_dot.transpose()*body->p)(0);
 		body->p_dot -= sigma*body->p;
     }
