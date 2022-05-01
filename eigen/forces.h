@@ -115,9 +115,9 @@ class BodyDamping : public ForceElement
 {
 public:
     Body* body;
-    double k_t;
-    double k_r;
-    BodyDamping(Body* body, double k_t, double k_r);
+    Eigen::Matrix3d k_t;
+    Eigen::Matrix3d k_r;
+    BodyDamping(Body* body, Eigen::Matrix3d k_t, Eigen::Matrix3d k_r);
     ~BodyDamping(){}
 	void Apply(Eigen::VectorXd &y_rhs);
     void Draw(void);

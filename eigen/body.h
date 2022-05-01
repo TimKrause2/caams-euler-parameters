@@ -38,6 +38,7 @@ public:
 	Eigen::Matrix3d N();
 	Eigen::Matrix4d J_star();
 	Eigen::Matrix<double,7,1> b_star();
+	double E_k(void);
 
     virtual void Draw(void)=0;
 public:
@@ -132,5 +133,21 @@ public:
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
+class Sphere : public Body
+{
+	double radius;
+public:
+	Sphere(
+			Eigen::Vector3d r,
+			Eigen::Vector4d p,
+			Eigen::Vector3d r_dot,
+			Eigen::Vector4d p_dot,
+			double mass,
+			double radius);
+	~Sphere(void){}
+	virtual void Draw(void);
+public:
+  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+};
 
 #endif

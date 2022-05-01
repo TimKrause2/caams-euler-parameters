@@ -163,7 +163,7 @@ BodyLocalForce::BodyLocalForce(Body *body, Eigen::Vector3d f):
 
 void BodyLocalForce::Apply(Eigen::VectorXd &y_rhs)
 {
-	Eigen::Vector3d f_g = caams::Ap(body->rk_p).transpose()*f;
+	Eigen::Vector3d f_g = caams::Ap(body->rk_p)*f;
     AccumulateForce(y_rhs, f_g, body->eqn_index);
 }
 
@@ -223,7 +223,7 @@ void BodyGlobalTorque::Draw(void)
 
 }
 
-BodyDamping::BodyDamping(Body *body,double k_t, double k_r):
+BodyDamping::BodyDamping(Body *body, Eigen::Matrix3d k_t, Eigen::Matrix3d k_r):
     body(body),
     k_t(k_t),
     k_r(k_r)
@@ -233,10 +233,14 @@ BodyDamping::BodyDamping(Body *body,double k_t, double k_r):
 
 void BodyDamping::Apply(Eigen::VectorXd &y_rhs)
 {
-	Eigen::Vector3d omega(2.0*caams::G(body->rk_p)*body->rk_p_dot);
-	Eigen::Vector3d n = -k_r * omega;
-	AccumulateTorque(y_rhs,2.0*caams::G(body->rk_p).transpose()*n,body->eqn_index+3);
-    AccumulateForce(y_rhs, -k_t*body->rk_r_dot, body->eqn_index);
+    Eigen::Vector3d omega_p(2.0*caams::L(body->rk_p)*body->rk_p_dot);
+    Eigen::Vector3d n_p = -k_r * omega_p;
+    AccumulateTorque(y_rhs,2.0*caams::L(body->rk_p).transpose()*n_p,body->eqn_index+3);
+    Eigen::Matrix3d A(caams::Ap(body->rk_p));
+    Eigen::Vector3d r_dot_p = A.transpose()*body->rk_r_dot;
+    Eigen::Vector3d F_p = -k_t * r_dot_p;
+    Eigen::Vector3d F = A*F_p;
+    AccumulateForce(y_rhs, F, body->eqn_index);
 }
 
 void BodyDamping::Draw(void)

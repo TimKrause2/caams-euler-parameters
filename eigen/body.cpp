@@ -1,4 +1,5 @@
 #include "body.h"
+#include "primitives.h"
 #include <iostream>
 #include <GL/gl.h>
 #include <GL/freeglut.h>
@@ -21,10 +22,10 @@ Body::Body(
     p_dot(p_dot),
     mass(mass),
 	J_p(J_p),
-	rk_r(Eigen::Vector3d::Zero()),
-	rk_p(Eigen::Vector4d(1.0, 0.0, 0.0, 0.0)),
-	rk_r_dot(Eigen::Vector3d::Zero()),
-	rk_p_dot(Eigen::Vector4d::Zero())
+	rk_r(r),
+	rk_p(p),
+	rk_r_dot(r_dot),
+	rk_p_dot(p_dot)
 {
 	eqn_index = -1;
 }
@@ -47,9 +48,17 @@ Eigen::Matrix<double,7,1> Body::b_star(void)
     return r;
 }
 
+double Body::E_k(void)
+{
+	double E_t = 0.5*mass*(r_dot.transpose()*r_dot)(0);
+	Eigen::Vector3d omega_p = 2.0*caams::L(p)*p_dot;
+	double E_r = 0.5*(omega_p.transpose()*J_p*omega_p)(0);
+	return E_t + E_r;
+}
+
 DatumBody::DatumBody(void):
     Body(
-		Eigen::Vector3d(0.0, 0.0, 0.0),
+		Eigen::Vector3d::Zero(),
 		Eigen::Vector4d(1.0, 0.0, 0.0, 0.0),
 		Eigen::Vector3d::Zero(),
 		Eigen::Vector4d::Zero(),
@@ -117,7 +126,7 @@ void CylinderXaxis::Draw(void)
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glMultMatrixd(glm::value_ptr(Amodel));
-    glutWireCylinder(radius,length,(GLint)5,(GLint)1);
+	WireCylinder(radius,length,(GLint)5,(GLint)1);
     glPopMatrix();
 }
 
@@ -151,7 +160,7 @@ void CylinderYaxis::Draw(void)
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glMultMatrixd(glm::value_ptr(Amodel));
-    glutWireCylinder(radius,length,(GLint)5,(GLint)1);
+	WireCylinder(radius,length,(GLint)5,(GLint)1);
     glPopMatrix();
 }
 
@@ -183,7 +192,7 @@ void CylinderZaxis::Draw(void)
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glMultMatrixd(glm::value_ptr(Amodel));
-    glutWireCylinder(radius,length,(GLint)5,(GLint)1);
+	WireCylinder(radius,length,(GLint)5,(GLint)1);
     glPopMatrix();
 }
 
@@ -217,9 +226,37 @@ void Cuboid::Draw(void)
     glMatrixMode(GL_MODELVIEW);
     glPushMatrix();
     glMultMatrixd(glm::value_ptr(Amodel));
-    glutWireCube(1.0);
+	WireCube(1.0);
     glPopMatrix();
 
 }
 
+Sphere::Sphere(
+		Eigen::Vector3d r,
+		Eigen::Vector4d p,
+		Eigen::Vector3d r_dot,
+		Eigen::Vector4d p_dot,
+		double mass,
+		double radius):
+	Body(r,p,r_dot,p_dot,mass,caams::J_p_sphere(mass,radius)),
+	radius(radius)
+{
+
+}
+
+void Sphere::Draw(void)
+{
+	glm::dmat3x3 Aglm = E2GLM(caams::Ap(p));
+	glm::dmat4x4 Abody(Aglm);
+	glm::dvec3 rglm = E2GLM(r);
+	glm::dmat4x4 Atrans = glm::translate(rglm);
+	glm::dmat4x4 Amodel = Atrans*Abody;
+
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glMultMatrixd(glm::value_ptr(Amodel));
+	WireSphere(radius,16,8);
+	glPopMatrix();
+
+}
 

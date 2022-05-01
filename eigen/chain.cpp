@@ -21,8 +21,8 @@
 #define DRIVER_K_T        0.0
 
 #define LINK_MASS         0.2
-#define LINK_RADIUS       0.01
-#define LINK_LENGTH       0.1
+#define LINK_RADIUS       0.03
+#define LINK_LENGTH       0.15
 #define LINK_K_T          0.001
 #define LINK_K_R          0.003
 
@@ -81,11 +81,15 @@ void init_system(void)
     gravity = new SystemGravityForce(
 				Eigen::Vector3d(0.0,-9.81,0.0),
                 mbsystem);
-    driverFriction = new BodyDamping(driverBody,DRIVER_K_T,DRIVER_K_R);
+    driverFriction = new BodyDamping(driverBody,
+                                     DRIVER_K_T*Eigen::Matrix3d::Identity(),
+                                     DRIVER_K_R*Eigen::Matrix3d::Identity());
     driverMotor = new BodyLocalTorque(driverBody,
 									  Eigen::Vector3d::Zero());
     for(int i=0;i<N_LINKS;i++){
-        linkFriction[i] = new BodyDamping(linkBodies[i],LINK_K_T,LINK_K_R);
+        linkFriction[i] = new BodyDamping(linkBodies[i],
+                                          LINK_K_T*Eigen::Matrix3d::Identity(),
+                                          LINK_K_R*Eigen::Matrix3d::Identity());
     }
 
     mbsystem.AddBody(driverBody);
